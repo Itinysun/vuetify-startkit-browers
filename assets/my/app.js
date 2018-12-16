@@ -1,30 +1,24 @@
-var routes,router,app,apiBase,apiRequest,apiToken,apiKey;
-var baseUrlPath=getRealPath();
+trace('------app start------',null);
 var dev=true;
+var router,app,system_apiBase,system_apiClient;
 if(dev){
-    apiBase='https://www.easy-mock.com/mock/5c14f94ae31bd20904e2fd81/api'
+    trace('we are in DEV mode');
+    system_apiBase='https://www.easy-mock.com/mock/5c14f94ae31bd20904e2fd81/api'
 }else{
-    apiBase='';
+    system_apiBase='';
 }
-apiRequest =  axios.create({
-    baseURL: apiBase,
-    timeout:5000
-});
-routes = [
-    { path: '/',name:'home', component: LoadComponent('layout') },
-    { path: '/login',name:'login', component: LoadComponent('demo/login') }
-];
-router = new VueRouter({
-    routes: routes
-});
-router.beforeEach(function (to, from, next) {
-    if(!apiToken && to.name!='login'){
-        next({'name':'login'})
-    }else{
-        axios.defaults.headers.common['Authorization'] = apiToken;
-        next();
-    }
-});
+var system_baseUrlPath=getRealPath();
+trace(system_baseUrlPath,'base url path');
+
+var system_auth={
+    version:'',
+    key:'',
+    token:''
+};
+
+init_apiClient();
+init_router();
+Vue.config.productionTip = false;
 app = new Vue({
     router: router
 }).$mount('#app');

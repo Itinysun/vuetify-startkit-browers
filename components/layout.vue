@@ -40,6 +40,8 @@
 </template>
 
 <script>
+
+
     module.exports = {
         data: function () {
             return {
@@ -48,6 +50,13 @@
         },
         props: {
             source: String
+        },
+        components: {
+            'my-text': LoadComponent('form/my_text')
+        },
+        beforeCreate:function () {
+
+
         }
     }
 </script>

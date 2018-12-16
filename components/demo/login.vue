@@ -29,8 +29,8 @@
                             </v-toolbar>
                             <v-card-text>
                                 <v-form>
-                                    <v-text-field :model="un" prepend-icon="person" name="login" label="Login" type="text"></v-text-field>
-                                    <v-text-field :model="pwd" id="password" prepend-icon="lock" name="password" label="Password" type="password"></v-text-field>
+                                    <my-text :config="form.un"></my-text>
+                                    <my-text :config="form.pwd"></my-text>
                                 </v-form>
                             </v-card-text>
                             <v-card-actions>
@@ -50,7 +50,23 @@
         data: function () {
             return {
                 un:'',
-                pwd:''
+                pwd:'',
+                form:{
+                    un:{
+                        el_icon:'person',
+                        el_type:'text',
+                        el_name:'un',
+                        el_value:'',
+                        el_title:'User Name'
+                    },
+                    pwd:{
+                        el_icon:'lock',
+                        el_type:'text',
+                        el_name:'pwd',
+                        el_value:'',
+                        el_title:'Password'
+                    }
+                }
             }
         },
         props: {
@@ -62,30 +78,27 @@
                     name:this.un,
                     pwd:this.pwd
                 };
-                apiRequest({
+                system_apiClient({
                     url:'/login',
                     method:'get',
                     params:auth
                 }).then(function (response) {
-                    if(response.status==200){
-                        if(response.data.code==200){
-                            apiKey=response.data.data.key;
-                            apiToken=response.data.data.token;
-                            console.log(response.data.data);
-                            router.push({'name':'home'});
-                        }else{
-
-                        }
+                    if(response.code===200){
+                        system_auth.key=response.data.key;
+                        system_auth.token=response.data.token;
+                        router.push({'name':'home'});
                     }else{
-                        console.log(response);
+                        console.log('123');
+                        iziToast.show({
+                            title: 'Hey',
+                            message: 'What would you like to add?'
+                        });
                     }
-                }).catch(function (error) {
-                    console.log(error);
                 });
-
-
             }
-        }
+        },components: {
+            'my-text': LoadComponent('form/my_text')
+        },
     }
 </script>
 
