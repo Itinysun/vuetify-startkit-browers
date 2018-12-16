@@ -15,10 +15,18 @@ function getRealPath(){
     }
     return localhostPaht + projectName;
 }
+var system_components_cache={};
 function LoadComponent(str) {
-    trace(str,'try to load:');
     var url = system_baseUrlPath+'components/'+str+'.vue';
-   return httpVueLoader(url);
+    var instance=system_components_cache[str];
+    if(instance){
+        trace(str,'load component from cache:');
+    }else{
+        trace(str,'load component from url:');
+       instance= httpVueLoader(url);
+        system_components_cache[str]=instance;
+    }
+    return instance;
 }
 function trace(v,title) {
     if(!dev)

@@ -28,10 +28,7 @@
                                 </v-tooltip>
                             </v-toolbar>
                             <v-card-text>
-                                <v-form>
-                                    <my-text :config="form.un"></my-text>
-                                    <my-text :config="form.pwd"></my-text>
-                                </v-form>
+                                <my-form :items="form"></my-form>
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
@@ -49,24 +46,32 @@
     module.exports = {
         data: function () {
             return {
-                un:'',
-                pwd:'',
-                form:{
-                    un:{
-                        el_icon:'person',
-                        el_type:'text',
-                        el_name:'un',
-                        el_value:'',
-                        el_title:'User Name'
-                    },
-                    pwd:{
-                        el_icon:'lock',
-                        el_type:'text',
-                        el_name:'pwd',
-                        el_value:'',
-                        el_title:'Password'
-                    }
-                }
+                form:[
+                        {
+                            c_name:"un",
+                            c_path:'form/my_text',
+                            c_instance:'',
+                            c_prop:{
+                                el_icon:'person',
+                                el_type:'text',
+                                el_name:'un',
+                                el_value:'',
+                                el_title:'User Name'
+                            }
+                        },
+                        {
+                            c_name:"pwd",
+                            c_path:'form/my_text',
+                            c_instance:'',
+                            c_prop:{
+                                el_icon:'lock',
+                                el_type:'text',
+                                el_name:'pwd',
+                                el_value:'',
+                                el_title:'Password'
+                            }
+                        }
+                    ]
             }
         },
         props: {
@@ -96,9 +101,9 @@
                     }
                 });
             }
-        },components: {
-            'my-text': LoadComponent('form/my_text')
-        },
+        },beforeCreate:function () {
+            Vue.component('my-form',LoadComponent('form/my_form'));
+        }
     }
 </script>
 
