@@ -42,30 +42,11 @@ function init_apiClient() {
         baseURL: system_apiBase,
         timeout:5000
     });
-    system_apiClient.interceptors.response.use(function (response) {
-        var status=response.status;
-        trace(status,'response status');
-        if(200===status){
-            trace(response.data,'response data');
-            return response.data;
-        }else if(401===status){
-            router.push({name:'login',params:{last:response.config.url}})
-        }else if(404===status){
-            router.push({name:'404'});
-        }else if(403===status){
-            router.push({name:'403'})
-        }else{
-            router.push({name:'error',params:{code:status,message:response.statusText}})
-        }
-    }, function (error) {
-        trace(error,'response error');
-        return Promise.reject(error);
-    });
 }
 function init_router() {
     var routes = [
-        { path: '/',name:'home', component: LoadComponent('layout') },
-        { path: '/login',name:'login', component: LoadComponent('demo/login') }
+        { path: '/',name:'home', component: LoadComponent('layout')},
+        { path: '/login',name:'login', component: LoadComponent('demo/login'),meta:{api:'/login_form'} }
     ];
     router = new VueRouter({
         routes: routes
@@ -74,11 +55,88 @@ function init_router() {
         trace(to.name,'route to');
         if(!system_auth.token && to.name!=='login'){
             trace('need login',null);
-            next({'name':'login'})
+            next({name:'login'})
         }else{
             trace(system_auth.token,'auth token');
             system_apiClient.defaults.headers.common['Authorization'] =system_auth.token;
-            next();
+            if(to.meta.api){
+                api_call('/login_form',null,null,false).then(function (value) {
+                    if(value.code===200){
+                        next({props:{route_data:value.data}});
+                    }else{
+                        system_message.error('oh,no!出错了~',value.message)
+                    }
+                })
+            }else{
+                next();
+            }
         }
     });
 }
+var system_message={
+    error : function (title,message) {
+        iziToast.show({
+            theme: 'dark',
+            icon: 'mdi mdi-alert',
+            title: title,
+            message:message,
+            timeout:3000,
+            color:'#ff3c0f',
+            position: 'topCenter',
+            layout: 2
+        })
+    }
+};
+function api_call(url, method, data, useLoading,useRouter) {
+    if(undefined=== method || null===method)
+        method='get';
+    if(undefined=== data || null===data)
+        data={};
+    if(undefined===useLoading || useLoading!==false)
+        useLoading=true;
+    if(undefined===useRouter || useRouter!==true)
+        useRouter=false;
+    if(useLoading)
+        store.commit('beginLoading');
+    return new Promise(function (resolve, reject) {
+        system_apiClient({
+            url:url,
+            method:method,
+            params:data
+        }).then(function (response) {
+            var status=response.status;
+            trace(status,'response status');
+            if(200===status){
+                trace(response.data,'response data');
+                resolve(response.data);
+            }else {
+                if(useRouter){
+                    if(401===status){
+                        router.push({name:'login', props:{last:response.config.url}});
+                    }else if(404===status){
+                        router.push({name:'404'});
+                    }else if(403===status){
+                        router.push({name:'403'})
+                    }else{
+                        router.push({name:'error', props:{code:status,message:response.statusText}})
+                    }
+                }else{
+                    resolve({
+                        code:status,
+                        message:response.statusText
+                    });
+                }
+            }
+        }).catch(function (error) {
+            resolve({
+                code:500,
+                message:error.message
+            });
+        }).then(function () {
+            if(useLoading)
+                store.commit('endLoading');
+        });
+    });
+
+}
+
