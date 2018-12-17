@@ -15,13 +15,11 @@ var system_auth={
     key:'',
     token:''
 };
-var system_store={
-    loading:false
-};
 init_apiClient();
 init_router();
 init_Store();
 Vue.config.productionTip = false;
 app = new Vue({
-    router: router
+    router: router,
+    store:store
 }).$mount('#app');

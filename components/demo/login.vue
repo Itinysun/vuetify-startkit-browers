@@ -9,11 +9,13 @@
                                 <v-spacer></v-spacer>
                             </v-toolbar>
                             <v-card-text>
-                                <my-form :items="items"></my-form>
+                                <my-form>
+                                    <component :is="item.c_instance" :config="item.c_prop" v-for="item in items" :key="item.c_name"></component>
+                                </my-form>
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn :loading="loading" :disabled="loading" color="info" @click="login" >
+                                <v-btn :loading="loading" :disabled="loading" color="info" @click="doLogin" >
                                     Login
                                 </v-btn>
                             </v-card-actions>
@@ -24,32 +26,26 @@
         </v-content></v-app>
 </template>
 <script>
-    var form_data;
     module.exports = {
         data: function () {
             return {
+                items:store.state.loginForm
             }
         },
         props: {
             last: false,
-            route_data:{}
+            route_data:{},
         },
-        computed:{
-            loading:function () {
-                return store.state.httpLoading;
-            },
-            form:function () {
-                return form_data;
-            }
-        },
+        computed:Vuex.mapState(['loading']),
         methods:{
-            login:function () {
-
+            doLogin:function () {
+                trace(this.route_data,'route_data');
+                trace(this.last,'last')
             }
-        },beforeCreate:function () {
+        },
+        beforeCreate:function () {
             Vue.component('my-form',LoadComponent('form/my_form'));
-        },created:function () {
-
+            store.dispatch('loadLoginForm');
         }
     }
 </script>

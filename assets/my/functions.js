@@ -46,7 +46,7 @@ function init_apiClient() {
 function init_router() {
     var routes = [
         { path: '/',name:'home', component: LoadComponent('layout')},
-        { path: '/login',name:'login', component: LoadComponent('demo/login'),meta:{api:'/login_form'} }
+        { path: '/login',name:'login', component: LoadComponent('demo/login')}
     ];
     router = new VueRouter({
         routes: routes
@@ -55,21 +55,11 @@ function init_router() {
         trace(to.name,'route to');
         if(!system_auth.token && to.name!=='login'){
             trace('need login',null);
-            next({name:'login'})
+            next({name:'login',props:{last:"123"}})
         }else{
             trace(system_auth.token,'auth token');
             system_apiClient.defaults.headers.common['Authorization'] =system_auth.token;
-            if(to.meta.api){
-                api_call('/login_form',null,null,false).then(function (value) {
-                    if(value.code===200){
-                        next({props:{route_data:value.data}});
-                    }else{
-                        system_message.error('oh,no!出错了~',value.message)
-                    }
-                })
-            }else{
-                next();
-            }
+            next();
         }
     });
 }
@@ -137,6 +127,5 @@ function api_call(url, method, data, useLoading,useRouter) {
                 store.commit('endLoading');
         });
     });
-
 }
 
