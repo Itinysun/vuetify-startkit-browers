@@ -44,21 +44,17 @@ function init_apiClient() {
     });
 }
 function init_router() {
-    var routes = [
-        { path: '/',name:'home', component: LoadComponent('layout')},
-        { path: '/login',name:'login', component: LoadComponent('demo/login')}
-    ];
     router = new VueRouter({
-        routes: routes
+        routes: store.state.routes
     });
     router.beforeEach(function (to, from, next) {
         trace(to.name,'route to');
-        if(!system_auth.token && to.name!=='login'){
+        if(!store.state.apiToken && to.name!=='login'){
             trace('need login',null);
-            next({name:'login',props:{last:"123"}})
+            next({name:'login'})
         }else{
-            trace(system_auth.token,'auth token');
-            system_apiClient.defaults.headers.common['Authorization'] =system_auth.token;
+            trace(store.state.apiToken,'auth token');
+            system_apiClient.defaults.headers.common['Authorization'] =store.state.apiToken;
             next();
         }
     });
@@ -98,7 +94,11 @@ function api_call(url, method, data, useLoading,useRouter) {
             trace(status,'response status');
             if(200===status){
                 trace(response.data,'response data');
-                resolve(response.data);
+                setTimeout(function () {
+                    if(useLoading)
+                        store.commit('endLoading');
+                    resolve(response.data);
+                },2000)
             }else {
                 if(useRouter){
                     if(401===status){
@@ -123,9 +123,19 @@ function api_call(url, method, data, useLoading,useRouter) {
                 message:error.message
             });
         }).then(function () {
-            if(useLoading)
-                store.commit('endLoading');
+            // if(useLoading)
+            //     store.commit('endLoading');
         });
     });
+}
+function resolveRoutes(data){
+    if(data && data.length>1){
+        for (var i=0;i<data.length;i++){
+            data[i].component=LoadComponent(data[i].component);
+        }
+        return data;
+    }else{
+        return false;
+    }
 }
 

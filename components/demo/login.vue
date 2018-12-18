@@ -9,13 +9,20 @@
                                 <v-spacer></v-spacer>
                             </v-toolbar>
                             <v-card-text>
-                                <my-form>
-                                    <component :is="item.c_instance" :config="item.c_prop" v-for="item in items" :key="item.c_name"></component>
-                                </my-form>
+                                <div class="text-xs-center"  v-show="httpLoading && notLoaded">
+                                    <v-progress-circular
+                                            :size="50"
+                                            color="primary"
+                                            indeterminate
+                                    ></v-progress-circular>
+                                </div>
+                                <v-form>
+                                    <component :is="item.c_instance" :config="item.c_prop" v-for="item in loginForm" :key="item.c_name"></component>
+                                </v-form>
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn :loading="loading" :disabled="loading" color="info" @click="doLogin" >
+                                <v-btn :loading="httpLoading" :disabled="httpLoading" color="info" @click="doLogin" >
                                     Login
                                 </v-btn>
                             </v-card-actions>
@@ -29,23 +36,30 @@
     module.exports = {
         data: function () {
             return {
-                items:store.state.loginForm
+                notLoaded:true
             }
         },
         props: {
             last: false,
-            route_data:{},
+            route_data:{}
         },
-        computed:Vuex.mapState(['loading']),
+        computed:Vuex.mapState(['httpLoading','loginForm']),
         methods:{
             doLogin:function () {
-                trace(this.route_data,'route_data');
-                trace(this.last,'last')
+                this.notLoaded=false;
+
             }
         },
-        beforeCreate:function () {
-            Vue.component('my-form',LoadComponent('form/my_form'));
+        mounted:function () {
+            //从接口调取登陆需要的字段
             store.dispatch('loadLoginForm');
+        },beforeRouteEnter (to, from, next) {
+            //如果用户从其他页面跳转而来，那么登陆以后还跳转回去
+            if(from && from.name && from.name!=='login'){
+                trace('after login we will redirect to the route named:',from.name);
+                store.commit('saveLastRoute',from);
+            }
+            next();
         }
     }
 </script>
