@@ -43,22 +43,7 @@ function init_apiClient() {
         timeout:5000
     });
 }
-function init_router() {
-    router = new VueRouter({
-        routes: store.state.routes
-    });
-    router.beforeEach(function (to, from, next) {
-        trace(to.name,'route to');
-        if(!store.state.apiToken && to.name!=='login'){
-            trace('need login',null);
-            next({name:'login'})
-        }else{
-            trace(store.state.apiToken,'auth token');
-            system_apiClient.defaults.headers.common['Authorization'] =store.state.apiToken;
-            next();
-        }
-    });
-}
+
 var system_message={
     error : function (title,message) {
         iziToast.show({
@@ -73,7 +58,7 @@ var system_message={
         })
     }
 };
-function api_call(url, method, data, useLoading,useRouter) {
+ function api_call(url, method, data, useLoading,useRouter) {
     if(undefined=== method || null===method)
         method='get';
     if(undefined=== data || null===data)
@@ -84,6 +69,7 @@ function api_call(url, method, data, useLoading,useRouter) {
         useRouter=false;
     if(useLoading)
         store.commit('beginLoading');
+    trace(url,'api request call');
     return new Promise(function (resolve, reject) {
         system_apiClient({
             url:url,
@@ -91,14 +77,14 @@ function api_call(url, method, data, useLoading,useRouter) {
             params:data
         }).then(function (response) {
             var status=response.status;
-            trace(status,'response status');
+            trace(status,'api response status');
             if(200===status){
-                trace(response.data,'response data');
+                trace(response.data,'api response data');
                 setTimeout(function () {
                     if(useLoading)
                         store.commit('endLoading');
                     resolve(response.data);
-                },2000)
+                },500)
             }else {
                 if(useRouter){
                     if(401===status){
@@ -128,14 +114,28 @@ function api_call(url, method, data, useLoading,useRouter) {
         });
     });
 }
+//递归处理路由
 function resolveRoutes(data){
     if(data && data.length>1){
         for (var i=0;i<data.length;i++){
             data[i].component=LoadComponent(data[i].component);
+            if(data[i].children && data[i].children.length>0){
+                data[i].children=resolveRoutes(data[i].children);
+            }
         }
         return data;
     }else{
         return false;
+    }
+}
+function init_Session() {
+    var auth=Cookies.get('_auth');
+    if(auth && auth.token){
+        trace(auth.user.nickname,'load user auth from cookie');
+        store.commit('updateUser',auth.user);
+        store.commit('updateApiToken',auth.token);
+    }else{
+        trace('no available cookie found');
     }
 }
 

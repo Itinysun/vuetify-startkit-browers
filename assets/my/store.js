@@ -5,18 +5,13 @@ function init_Store() {
             httpLoading: false,
             loginForm:[],
             lastRoute:[],
-            apiKey:false,
             apiToken:false,
             menus:[],
             user:{
                 id:false,
                 nickname:'user',
                 access:[]
-            },
-            routes : [
-                { path: '/',name:'root', component: LoadComponent('layout')},
-                { path: '/login',name:'login', component: LoadComponent('demo/login')}
-            ]
+            }
         },
         mutations: {
             beginLoading(state) {
@@ -33,6 +28,12 @@ function init_Store() {
             },
             saveLastRoute(state,route){
                 state.lastRoute=route
+            },
+            updateUser(state,user){
+                state.user=user;
+            },
+            updateApiToken(state,apiToken){
+                state.apiToken=apiToken;
             }
         },
         actions:{
@@ -48,9 +49,12 @@ function init_Store() {
             login(context){
                 api_call('/login').then(function (value) {
                     if(value.code===200){
-                        //context.commit('updateUser',value.data);
+                        context.commit('updateUser',value.data.user);
+                        context.commit('updateApiToken',value.data.token);
+                        Cookies.set('_Auth',value.data);
+                        router.push({name:'home'});
                     }else{
-                        system_message.error('oh,no!出错了~',value.message)
+                        system_message.error('登陆失败！',value.message)
                     }
                 })
             }

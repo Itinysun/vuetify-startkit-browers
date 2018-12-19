@@ -16,7 +16,7 @@
                                             indeterminate
                                     ></v-progress-circular>
                                 </div>
-                                <v-form>
+                                <v-form  ref="form">
                                     <component :is="item.c_instance" :config="item.c_prop" v-for="item in loginForm" :key="item.c_name"></component>
                                 </v-form>
                             </v-card-text>
@@ -47,7 +47,9 @@
         methods:{
             doLogin:function () {
                 this.notLoaded=false;
-
+                //store.dispatch('login');
+                this.$refs.form.validate();
+                trace(this.$refs.form,'form');
             }
         },
         mounted:function () {

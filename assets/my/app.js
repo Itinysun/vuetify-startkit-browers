@@ -12,6 +12,7 @@ trace(system_baseUrlPath,'base url path');
 init_apiClient();
 init_Store();
 init_router();
+init_Session();
 Vue.config.productionTip = false;
 app = new Vue({
     router: router,
