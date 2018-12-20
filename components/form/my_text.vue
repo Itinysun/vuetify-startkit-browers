@@ -1,5 +1,17 @@
 <template>
-    <v-text-field v-model.trim="v" :rules="rules" :message="message" :error-messages="error_messages" :error="is_error" :prepend-icon="config.el_icon" :name="config.el_name" :label="config.el_title" :type="config.el_type"></v-text-field>
+    <v-text-field v-model="v" :success="is_validated" :messages="messages" :loading="is_loading" :error-messages="error_messages" :error="is_error" :prepend-icon="config.el_icon" :name="config.el_name" :label="config.el_title" :type="vtype" counter>
+        <v-fade-transition slot="append">
+            <v-progress-circular
+                    v-if="is_loading"
+                    size="24"
+                    color="info"
+                    indeterminate
+            ></v-progress-circular>
+        </v-fade-transition>
+        <v-icon slot="append" v-if="is_validated && !isPassword" color="green darken-2">mdi-check-outline</v-icon>
+        <v-icon slot="append" v-if="!is_validated && is_error && !isPassword" color="red darken-2">mdi-alert-circle-outline</v-icon>
+        <v-icon slot="append" v-if="isPassword" @click="showText = !showText">{{passwordIcon}}</v-icon>
+    </v-text-field>
 </template>
 
 <script>
@@ -8,52 +20,82 @@
         data: function () {
             return {
                 v:'',
-                question: '',
                 messages:'',
-                remoteValidate:false,
                 error_messages: '',
                 is_error:false,
-                rules:[function () {
-
-                }]
+                is_loading:false,
+                is_validated:false,
+                showText:false,
+                isPassword:'password'===this.config.el_type
             }
         },
         watch: {
             // 如果 `question` 发生改变，这个函数就会运行
             v: function (newV, oldV) {
-                this.messages = 'Waiting for you to stop typing...'
-                this.debouncedGetAnswer()
+                this.is_error=false;
+                this.error_messages='';
+                this.is_validated=false;
+                this.messages = '等待输入完成...';
+                this.debouncedValidate()
             }
-        },created: function () {
+        },computed:{
+            passwordIcon:function () {
+                if(this.isPassword){
+                    return this.showText ? 'visibility_off' : 'visibility';
+                }else{
+                    return '';
+                }
+            },
+            vtype:function () {
+                if(this.isPassword){
+                    return this.showText ? 'text' : 'password';
+                }else{
+                    return 'text';
+                }
+            },
+            checkRequired:function (){
+                if(this.config.required && !this.v){
+                    this.error_messages = '这是必填项';
+                    this.is_error=true;
+                    return false;
+                }else{
+                    return true;
+                }
+            }
+        },
+        created: function () {
             // `_.debounce` 是一个通过 Lodash 限制操作频率的函数。
             // 在这个例子中，我们希望限制访问 yesno.wtf/api 的频率
             // AJAX 请求直到用户输入完毕才会发出。想要了解更多关于
             // `_.debounce` 函数 (及其近亲 `_.throttle`) 的知识，
             // 请参考：https://lodash.com/docs#debounce
-            this.debouncedGetAnswer = _.debounce(this.remoteValidate, 500)
+            this.debouncedValidate = _.debounce(this.remoteValidate, 1000)
         },
         methods: {
-            async remoteValidate (){
-                var vm = this;
-                    if (vm.config.required && !vm.v) {
-                        vm.messages = 'this filed is required';
-                        return false;
-                    }else{
-                        vm.messages = 'Validating...';
-                      var res = await api_call('/validate',null,{val:vm.v},false,false).then(function (value) {
-                            if(value.code===200){
-                                vm.error_messages = false;
-                                resolve(true);
-                            }else{
-                                vm.error_messages = value.data;
-                                resolve(false);
-                            }
-                        }).catch(function (error) {
-                            vm.is_error=false;
-                            vm.error_messages = 'Error! Could not reach the API. ' + error;
-                            resolve(false);
-                        })
-                    }
+            seValidateStatue(val){
+                this.is_error=!(true===val);
+                this.error_messages=(this.is_error ? val:'');
+                this.is_validated=!this.is_error;
+                this.messages='';
+            },
+            remoteValidate:function (){
+                if(this.checkRequired===true){
+                    var vm = this;
+                    vm.messages = '数据验证中...';
+                    vm.is_loading=true;
+                    trace('Validating.00');
+                    api_call('/validate',null,{val:vm.v},false,false).then(function (value) {
+                        if(value.code===200){
+                            vm.seValidateStatue(true);
+                        }else{
+                            vm.seValidateStatue(value.message);
+                        }
+                    }).catch(function (error) {
+                        vm.seValidateStatue('抱歉，远程验证发生异常：' + error);
+                    }).then(function () {
+                        vm.is_loading=false;
+                    })
+                }
             }
         }
     }

@@ -77,7 +77,7 @@ var system_message={
             params:data
         }).then(function (response) {
             var status=response.status;
-            trace(status,'api response status');
+            trace(status===200?'success':status,'api response status');
             if(200===status){
                 trace(response.data,'api response data');
                 setTimeout(function () {

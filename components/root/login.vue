@@ -16,7 +16,7 @@
                                             indeterminate
                                     ></v-progress-circular>
                                 </div>
-                                <v-form  ref="form">
+                                <v-form  ref="form" :lazy-validation="true">
                                     <component :is="item.c_instance" :config="item.c_prop" v-for="item in loginForm" :key="item.c_name"></component>
                                 </v-form>
                             </v-card-text>
