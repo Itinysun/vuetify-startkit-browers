@@ -23,7 +23,7 @@ function LoadComponent(str) {
         trace(str,'load component from cache:');
     }else{
         trace(str,'load component from url:');
-       instance= httpVueLoader(url);
+        instance= httpVueLoader(url);
         system_components_cache[str]=instance;
     }
     return instance;
