@@ -16,9 +16,7 @@
                                             indeterminate
                                     ></v-progress-circular>
                                 </div>
-                                <v-form  ref="form" :lazy-validation="true">
-                                    <component :is="item.c_instance" :config="item.c_prop" v-for="item in loginForm" :key="item.c_name"></component>
-                                </v-form>
+                                <my-form ref="login" form_id="login"></my-form>
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
@@ -39,28 +37,24 @@
                 notLoaded:true
             }
         },
-        props: {
-            last: false,
-            route_data:{}
-        },
-        computed:Vuex.mapState(['httpLoading','loginForm']),
+        computed:Vuex.mapState(['httpLoading']),
         methods:{
             doLogin:function () {
                 this.notLoaded=false;
-                //store.dispatch('login');
-                this.$refs.form.validate();
-                trace(this.$refs.form,'form');
+                var form = this.$refs.login.validate();
+                if(form && false!==form){
+                    store.dispatch('login',form);
+                }else{
+                    system_message.error('Action failed !','please fill the form first.');
+                }
             }
-        },
-        mounted:function () {
-            //从接口调取登陆需要的字段
-            store.dispatch('loadLoginForm');
         },beforeRouteEnter (to, from, next) {
             //如果用户从其他页面跳转而来，那么登陆以后还跳转回去
             if(from && from.name && from.name!=='login'){
                 trace('after login we will redirect to the route named:',from.name);
                 store.commit('saveLastRoute',from);
             }
+            Vue.component('my-form',LoadComponent('form/my_form'));
             next();
         }
     }

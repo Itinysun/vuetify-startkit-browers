@@ -129,7 +129,7 @@ function resolveRoutes(data){
     }
 }
 function init_Session() {
-    var auth=Cookies.get('_auth');
+    var auth=Cookies.getJSON('_Auth');
     if(auth && auth.token){
         trace(auth.user.nickname,'load user auth from cookie');
         store.commit('updateUser',auth.user);

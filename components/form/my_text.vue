@@ -30,7 +30,6 @@
             }
         },
         watch: {
-            // 如果 `question` 发生改变，这个函数就会运行
             v: function (newV, oldV) {
                 this.is_error=false;
                 this.error_messages='';
@@ -55,8 +54,7 @@
             },
             checkRequired:function (){
                 if(this.config.required && !this.v){
-                    this.error_messages = '这是必填项';
-                    this.is_error=true;
+                    this.setValidateStatue('这是必填项');
                     return false;
                 }else{
                     return true;
@@ -72,7 +70,7 @@
             this.debouncedValidate = _.debounce(this.remoteValidate, 1000)
         },
         methods: {
-            seValidateStatue(val){
+            setValidateStatue(val){
                 this.is_error=!(true===val);
                 this.error_messages=(this.is_error ? val:'');
                 this.is_validated=!this.is_error;
@@ -86,12 +84,12 @@
                     trace('Validating.00');
                     api_call('/validate',null,{val:vm.v},false,false).then(function (value) {
                         if(value.code===200){
-                            vm.seValidateStatue(true);
+                            vm.setValidateStatue(true);
                         }else{
-                            vm.seValidateStatue(value.message);
+                            vm.setValidateStatue(value.message);
                         }
                     }).catch(function (error) {
-                        vm.seValidateStatue('抱歉，远程验证发生异常：' + error);
+                        vm.setValidateStatue('抱歉，远程验证发生异常：' + error);
                     }).then(function () {
                         vm.is_loading=false;
                     })
