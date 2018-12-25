@@ -2,9 +2,14 @@ function init_router() {
     routes = [
         { path: '/', component: LoadComponent('layout'),children:[
                 {path:'',name:'home',component:LoadComponent('root/home')},
-                {path:'system',name:'system',component:LoadComponent('system'),children:[
-                        {path:'cache',name:'cache',component:LoadComponent('system/cache')},
-                        {path:'task',name:'task',component:LoadComponent('system/task')}
+                {path:'admin',name:'admin',children:[
+                        {path:'manage',name:'admin/manage',component:LoadComponent('admin/manage')},
+                        {path:'settings',name:'admin/settings',component:LoadComponent('admin/settings')}
+                    ]}
+                ,
+                {path:'others',name:'others',children:[
+                        {path:'404',name:'others/404',component:LoadComponent('others/404')},
+                        {path:'500',name:'others/500',component:LoadComponent('others/500')}
                     ]}
             ]},
         { path: '/login',name:'login', component: LoadComponent('root/login')}

@@ -1,53 +1,95 @@
 <template>
-    <v-treeview
-            :active.sync="active"
-            :items="items"
-            :load-children="fetchChildMenu"
-            :open.sync="open"
-            activatable
-            active-class="primary--text"
-            class="grey lighten-5"
-            open-on-click
-            transition
-    >
-    </v-treeview>
+    <v-layout row>
+        <v-flex>
+            <v-card>
+                <v-toolbar :color="color" dark>
+                    <v-img src="assets/images/logo.png" max-height="50" max-width="100" contain></v-img>
+                    <v-toolbar-title>Start Kit</v-toolbar-title>
+                </v-toolbar>
+
+                <v-list>
+                    <v-list-tile :to="{name:'home'}"  :exact="true" class="my_nav_active">
+                        <v-list-tile-action>
+                            <v-icon>home</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-title>Home</v-list-tile-title>
+                    </v-list-tile>
+                    <v-list-group
+                            v-for="item in items"
+                            v-model="item.active"
+                            :key="item.title"
+                            :prepend-icon="item.icon"
+                            no-action
+                            :group="item.route_name"
+                    >
+                        <v-list-tile slot="activator" >
+                            <v-list-tile-content>
+                                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+
+                        <v-list-tile
+                                v-for="subItem in item.items"
+                                :key="subItem.title"
+                                :to="{name:subItem.route_name}"
+                                class="my_nav_active">
+                            <v-list-tile-content>
+                                <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
+                            </v-list-tile-content>
+
+                            <v-list-tile-action>
+                                <v-icon>{{ subItem.icon }}</v-icon>
+                            </v-list-tile-action>
+                        </v-list-tile>
+                    </v-list-group>
+                </v-list>
+            </v-card>
+        </v-flex>
+    </v-layout>
 </template>
 
 <script>
     module.exports = {
         data: function () {
             return {
-                active: [],
-                avatar: null,
-                open: [],
-                users: []
+                color:store.state.mainColor,
+                items: [
+                    {
+                        icon: 'people_outline',
+                        title: '管理',
+                        route_name:'admin',
+                        items: [
+                            { title: '管理员',route_name:'admin/manage' },
+                            { title: '设置' ,route_name:'admin/settings'}
+                        ]
+                    },
+                    {
+                        icon: 'build',
+                        title: '其他页面',
+                        route_name:'others',
+                        items: [
+                            { title: '404页面',route_name:'others/404' },
+                            { title: '500页面' ,route_name:'others/500'}
+                        ]
+                    }
+                ]
             }
         },
         computed: {
-            items () {
-                return [
-                    {
-                        name: 'Users',
-                        children: this.users
-                    }
-                ]
-            },
-            selected () {
-                if (!this.active.length) return undefined;
+            active:function () {
 
-                const id = this.active[0];
-
-                return this.users.find(user => user.id === id)
             }
         },
         methods:{
-            fetchChildMenu:function () {
 
-            }
         }
     }
 </script>
 
 <style>
-
+.my_nav_active .primary--text {
+    border-left: #1e88e5 solid 4px;
+    cursor: default!important;
+    background-color: #f3f3f3;
+}
 </style>

@@ -7,16 +7,15 @@
         >
             <my-nav></my-nav>
         </v-navigation-drawer>
-        <v-toolbar color="indigo" dark fixed app>
+        <v-toolbar :color="color" dark fixed app>
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-            <v-toolbar-title>Application</v-toolbar-title>
         </v-toolbar>
         <v-content>
             <v-container fluid fill-height>
                 <router-view></router-view>
             </v-container>
         </v-content>
-        <v-footer color="indigo" app>
+        <v-footer :color="color" app>
             <span class="white--text">&copy; 2017</span>
         </v-footer>
     </v-app>
@@ -26,6 +25,7 @@
     module.exports = {
         data: function () {
             return {
+                color:store.state.mainColor,
                 drawer: null,
                 admins: [
                     ['Management', 'people_outline'],

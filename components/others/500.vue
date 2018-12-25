@@ -1,5 +1,5 @@
 <template>
-manage
+500
 </template>
 
 <script>

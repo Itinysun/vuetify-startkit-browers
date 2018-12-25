@@ -1,5 +1,5 @@
 <template>
-manage
+404
 </template>
 
 <script>

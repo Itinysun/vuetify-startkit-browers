@@ -1,5 +1,5 @@
 <template>
-
+settings
 </template>
 
 <script>

@@ -10,7 +10,8 @@ function init_Store() {
                 id:false,
                 nickname:'user',
                 access:[]
-            }
+            },
+            mainColor:'teal'
         },
         mutations: {
             beginLoading(state) {
