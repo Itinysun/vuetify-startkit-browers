@@ -1,18 +1,36 @@
 function init_router() {
     routes = [
+        //必须保证根路由组是第一个
         { path: '/', component: LoadComponent('layout'),children:[
-                {path:'',name:'home',component:LoadComponent('root/home')},
-                {path:'admin',name:'admin',children:[
-                        {path:'manage',name:'admin/manage',component:LoadComponent('admin/manage')},
-                        {path:'settings',name:'admin/settings',component:LoadComponent('admin/settings')}
-                    ]}
-                ,
-                {path:'others',name:'others',children:[
-                        {path:'404',name:'others/404',component:LoadComponent('others/404')},
-                        {path:'500',name:'others/500',component:LoadComponent('others/500')}
-                    ]}
-            ]},
-        { path: '/login',name:'login', component: LoadComponent('root/login')}
+            { path:'',name:'home',component:LoadComponent('root/home'),meta:{nav:false}},
+            { path: 'login',name:'login', component: LoadComponent('root/login'),meta:{nav:false}},
+            { path:'admin',name:'admin',meta:{icon:'people_outline',title: '权限管理'},children:[
+                    { path:'manage',name:'admin/manage',meta:{title: '管理员'},component:LoadComponent('admin/manage')},
+                    { path:'settings',name:'admin/settings',meta:{title: '规则设置'},component:LoadComponent('admin/settings')}
+                ]
+            },
+            { path:'system',name:'system',meta:{icon:'dashboard',title: '系统配置'},children:[
+                    { path:'path2',name:'name1',component:LoadComponent('root/blank'),meta:{title: '配置1'}},
+                    { path:'path1',name:'name2',component:LoadComponent('root/blank'),meta:{title: '配置2'}}
+                ]
+            },
+            { path:'members',name:'members',meta:{icon:'grade',title: '会员管理'},children:[
+                { path:'path21',name:'name3',component:LoadComponent('root/blank'),meta:{title: '会员管理'}},
+                { path:'path11',name:'name4',component:LoadComponent('root/blank'),meta:{title: '会员配置'}}
+            ]
+            },
+            { path:'plugins',name:'plugins',meta:{icon:'gavel',title: '插件管理'},children:[
+                { path:'path22',name:'name5',component:LoadComponent('root/blank'),meta:{title: '插件管理'}},
+                { path:'path12',name:'name6',component:LoadComponent('root/blank'),meta:{title: '插件配置'}}
+            ]
+            }
+        ]},
+
+
+        { path:'403',name:'403',props: { img: '403', title: 'Sorry, access denied.' },component:LoadComponent('root/error')},
+        { path:'500',name:'500',props: { img: '500', title: 'Sorry, the server is down.' },component:LoadComponent('root/error')},
+        { path:'*',name:'404',props: { img: '404', title: 'Sorry, page not found' },component:LoadComponent('root/error')}
+
     ];
     router = new VueRouter({
         routes: routes

@@ -1,7 +1,7 @@
 <template>
     <v-layout row>
         <v-flex>
-            <v-card>
+            <v-card flat>
                 <v-toolbar :color="color" dark>
                     <v-img src="assets/images/logo.png" max-height="50" max-width="100" contain></v-img>
                     <v-toolbar-title>Start Kit</v-toolbar-title>
@@ -16,7 +16,6 @@
                     </v-list-tile>
                     <v-list-group
                             v-for="item in items"
-                            v-model="item.active"
                             :key="item.title"
                             :prepend-icon="item.icon"
                             no-action
@@ -53,35 +52,35 @@
         data: function () {
             return {
                 color:store.state.mainColor,
-                items: [
-                    {
-                        icon: 'people_outline',
-                        title: '管理',
-                        route_name:'admin',
-                        items: [
-                            { title: '管理员',route_name:'admin/manage' },
-                            { title: '设置' ,route_name:'admin/settings'}
-                        ]
-                    },
-                    {
-                        icon: 'build',
-                        title: '其他页面',
-                        route_name:'others',
-                        items: [
-                            { title: '404页面',route_name:'others/404' },
-                            { title: '500页面' ,route_name:'others/500'}
-                        ]
-                    }
-                ]
-            }
-        },
-        computed: {
-            active:function () {
-
+                items: []
             }
         },
         methods:{
-
+            buildMenu:function (d) {
+                let arr=[];
+                for(let i=0;i<d.length;i++){
+                    let di=d[i];
+                    let it={};
+                    it.route_name=di.name;
+                    if(undefined!==di.meta){
+                        let meta=di.meta;
+                        if(undefined!==meta.nav && meta.nav===false)
+                            continue;
+                        if(undefined!==meta.icon)
+                            it.icon=meta.icon;
+                        if(undefined!==meta.title)
+                            it.title=meta.title;
+                    }
+                    if(di.children && di.children.length>0){
+                        it.items=this.buildMenu(di.children);
+                    }
+                    arr.push(it);
+                }
+                return arr;
+            }
+        },
+        mounted:function () {
+            this.items=this.buildMenu(routes[0].children);
         }
     }
 </script>
