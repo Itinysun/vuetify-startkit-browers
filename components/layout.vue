@@ -9,10 +9,18 @@
         </v-navigation-drawer>
         <v-toolbar :color="color" dark fixed app>
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+            <v-toolbar-items class="main_nav">
+                <v-btn :to="{name:'home'}" flat key="home" :exact="true">Home</v-btn>
+                <v-btn v-for="tab in tabs" :to="{name:tab.name}" flat :key="tab.name">{{tab.meta.title}}</v-btn>
+            </v-toolbar-items>
         </v-toolbar>
         <v-content>
             <v-container fluid fill-height>
-                <router-view></router-view>
+                <transition>
+                    <keep-alive>
+                        <router-view></router-view>
+                    </keep-alive>
+                </transition>
             </v-container>
         </v-content>
         <v-footer :color="color" app>
@@ -27,31 +35,26 @@
             return {
                 color:store.state.mainColor,
                 drawer: null,
-                admins: [
-                    ['Management', 'people_outline'],
-                    ['Settings', 'settings']
-                ],
-                cruds: [
-                    ['Create', 'add'],
-                    ['Read', 'insert_drive_file'],
-                    ['Update', 'update'],
-                    ['Delete', 'delete']
-                ]
+                tabs:store.state.navTab,
+                maxTabs:0
             }
         },
-        props: {
-            source: String
+        computed:{
+            leftTabs:function f() {
+                return _.min([this.maxTabs,this.tabs.length]);
+            }
         },
         components: {
             'my-nav': LoadComponent('root/my_nav')
         },
         beforeCreate:function () {
 
-
         }
     }
 </script>
 
 <style>
-
+.main_nav .v-btn--active{
+    border-bottom: 2px solid #ffffff;
+}
 </style>

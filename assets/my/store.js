@@ -11,7 +11,10 @@ function init_Store() {
                 nickname:'user',
                 access:[]
             },
-            mainColor:'teal'
+            mainColor:'teal',
+            navTab:[],
+            navTabIndex:[],
+            navTabActive:''
         },
         mutations: {
             beginLoading(state) {
@@ -28,6 +31,14 @@ function init_Store() {
             },
             updateApiToken(state,apiToken){
                 state.apiToken=apiToken;
+            },
+            setNavTab(state,tab){
+                var index=state.navTabIndex.indexOf(tab.name);
+                if(-1===index){
+                    state.navTab.push(tab);
+                    state.navTabIndex.push(tab.name)
+                }
+                state.navTabActive=tab.name
             }
         },
         actions:{
