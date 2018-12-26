@@ -3,7 +3,7 @@ function init_router() {
         //必须保证根路由组是第一个
         { path: '/', component: LoadComponent('layout'),children:[
             { path:'',name:'home',component:LoadComponent('root/home'),meta:{nav:false}},
-            { path: 'login',name:'login', component: LoadComponent('root/login'),meta:{nav:false}},
+
             { path:'admin',name:'admin',meta:{icon:'people_outline',title: '权限管理'},children:[
                     { path:'manage',name:'admin/manage',meta:{title: '管理员',tab:true},component:LoadComponent('admin/manage')},
                     { path:'settings',name:'admin/settings',meta:{title: '规则设置',tab:true},component:LoadComponent('admin/settings')}
@@ -25,10 +25,9 @@ function init_router() {
             ]
             }
         ]},
-
-
-        { path:'403',name:'403',props: { img: '403', title: 'Sorry, access denied.' },component:LoadComponent('root/error')},
-        { path:'500',name:'500',props: { img: '500', title: 'Sorry, the server is down.' },component:LoadComponent('root/error')},
+        { path:'/login',name:'login', component: LoadComponent('root/login'),meta:{nav:false}},
+        { path:'/403',name:'403',props: { img: '403', title: 'Sorry, access denied.' },component:LoadComponent('root/error')},
+        { path:'/500',name:'500',props: { img: '500', title: 'Sorry, the server is down.' },component:LoadComponent('root/error')},
         { path:'*',name:'404',props: { img: '404', title: 'Sorry, page not found' },component:LoadComponent('root/error')}
 
     ];
