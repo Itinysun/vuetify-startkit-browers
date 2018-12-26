@@ -9,10 +9,29 @@
         </v-navigation-drawer>
         <v-toolbar :color="color" dark fixed app>
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-            <v-toolbar-items class="main_nav">
-                <v-btn :to="{name:'home'}" flat key="home" :exact="true">Home</v-btn>
-                <v-btn v-for="tab in tabs" :to="{name:tab.name}" flat :key="tab.name">{{tab.meta.title}}</v-btn>
-            </v-toolbar-items>
+            <v-container pa-0 ma-0 fill-height>
+                <v-layout>
+                    <v-flex xs10>
+                        <v-tabs
+                                color="transparent"
+                                slider-color="yellow"
+                                height="64"
+                        >
+                            <v-tab
+                                    class="navTab"
+                                    v-for="tab in tabs"
+                                    :to="{name:tab.name}"
+                                    :key="tab.name"
+                            >
+                                {{ tab.meta.title }}
+                            </v-tab>
+                        </v-tabs>
+                    </v-flex>
+                    <v-flex xs2>
+
+                    </v-flex>
+                </v-layout>
+            </v-container>
         </v-toolbar>
         <v-content>
             <v-container fluid fill-height>
@@ -35,13 +54,7 @@
             return {
                 color:store.state.mainColor,
                 drawer: null,
-                tabs:store.state.navTab,
-                maxTabs:0
-            }
-        },
-        computed:{
-            leftTabs:function f() {
-                return _.min([this.maxTabs,this.tabs.length]);
+                tabs:store.state.navTab
             }
         },
         components: {
@@ -54,7 +67,7 @@
 </script>
 
 <style>
-.main_nav .v-btn--active{
-    border-bottom: 2px solid #ffffff;
+.navTab .v-tabs__item--active{
+    background-color: rgba(86, 86, 86, 0.23);
 }
 </style>
