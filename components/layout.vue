@@ -34,7 +34,7 @@
             </v-container>
         </v-toolbar>
         <v-content>
-            <v-container fluid fill-height>
+            <v-container fill-height>
                 <transition>
                     <keep-alive>
                         <router-view></router-view>

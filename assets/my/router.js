@@ -4,22 +4,22 @@ function init_router() {
         { path: '/', component: LoadComponent('layout'),children:[
             { path:'',name:'home',component:LoadComponent('root/home'),meta:{nav:false}},
 
-            { path:'admin',name:'admin',meta:{icon:'people_outline',title: '权限管理'},children:[
+            { path:'admin',name:'admin',component:LoadComponent('root/page'),meta:{icon:'people_outline',title: '权限管理'},children:[
                     { path:'manage',name:'admin/manage',meta:{title: '管理员',tab:true},component:LoadComponent('admin/manage')},
                     { path:'settings',name:'admin/settings',meta:{title: '规则设置',tab:true},component:LoadComponent('admin/settings')}
                 ]
             },
-            { path:'system',name:'system',meta:{icon:'dashboard',title: '系统配置'},children:[
+            { path:'system',name:'system',component:LoadComponent('root/page'),meta:{icon:'dashboard',title: '系统配置'},children:[
                     { path:'path2',name:'name1',component:LoadComponent('root/blank'),meta:{title: '配置1',tab:true}},
                     { path:'path1',name:'name2',component:LoadComponent('root/blank'),meta:{title: '配置2',tab:true}}
                 ]
             },
-            { path:'members',name:'members',meta:{icon:'grade',title: '会员管理'},children:[
+            { path:'members',name:'members',component:LoadComponent('root/page'),meta:{icon:'grade',title: '会员管理'},children:[
                 { path:'path21',name:'name3',component:LoadComponent('root/blank'),meta:{title: '会员管理',tab:true}},
                 { path:'path11',name:'name4',component:LoadComponent('root/blank'),meta:{title: '会员配置',tab:true}}
             ]
             },
-            { path:'plugins',name:'plugins',meta:{icon:'gavel',title: '插件管理'},children:[
+            { path:'plugins',name:'plugins',component:LoadComponent('root/page'),meta:{icon:'gavel',title: '插件管理'},children:[
                 { path:'path22',name:'name5',component:LoadComponent('root/blank'),meta:{title: '插件管理',tab:true}},
                 { path:'path12',name:'name6',component:LoadComponent('root/blank'),meta:{title: '插件配置',tab:true}}
             ]
